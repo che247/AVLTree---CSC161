@@ -33,23 +33,80 @@ uint32_t AVLTree::getHeight() {
 //******************************************************
 
 int AVLTree::getBalance() {
-	//insert code here
+    int lHeight = -1;
+    int rHeight = -1;
+
+    if (left != nullptr){
+        lHeight = left->getHeight();
+    }
+    if (right != nullptr){
+        rHeight = right->getHeight();
+    }
+    
+    //cout << "Balance Factor: " << lHeight - rHeight << endl;
+    return (lHeight - rHeight);
 }
 
 AVLTree* AVLTree::rotateRight() {
-	//insert code here
+    AVLTree* x = left;
+    AVLTree* T2 = left->right;
+
+    // rotate
+    x->right = this; // address of whatever pointer is being pointed too at the moment
+    left = T2;
+
+    return x;
 }
 
 AVLTree* AVLTree::rotateLeft() {
-	//insert code here
+    AVLTree* y = right;
+    AVLTree* T2 = y->left;
+
+    //rotate
+    y->left = this; 
+    right = T2;
+    
+    return  y;
 }
 
 AVLTree* AVLTree::rebalance() {
-	//insert code here
+    if (isLeaf()){
+        return this;
+    }
+    if (left != nullptr){
+        left->left->rebalance();
+    }
+    if (right != nullptr){
+        right->right->rebalance();
+    }
 }
 
 AVLTree* AVLTree::insert(int new_data) {
-	//insert code here to insert and rebalance tree
+    AVLTree* root = this;
+    if (data > new_data){
+        if (left == nullptr){
+            // store previous node as the parent node
+            left = new AVLTree(new_data, this);
+        } else {
+            (left)->insert(new_data);
+        }
+    } else {
+        if (right == nullptr){
+            right = new AVLTree(new_data, this);
+        } else {
+            (right)->insert(new_data);
+        }
+    }
+
+    root->updateHeight();
+
+    bool bal = isBalanced();
+    if (bal == false){
+        rebalance();
+        updateHeight();
+    }
+
+    return root;
 }
 
 

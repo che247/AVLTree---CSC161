@@ -17,7 +17,10 @@ int main() {
 	srand(time(NULL));
 	uint32_t numNodes = 10;
 	for (uint32_t i=1; i < numNodes; i++ ) {
-		tree1Root = tree1Root->insert(( rand() % 10000));
+        uint32_t node = (rand() % 100);
+		tree1Root = tree1Root->insert(node);
+        cout << "Node " << node << " inserted successfully!" << endl;
+
 
 		//Uncomment to help debug lost nodes
 //		if (tree1Root->countNodes() != i+2) {
