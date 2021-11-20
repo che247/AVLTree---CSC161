@@ -16,10 +16,11 @@ int main() {
 	srand(time(NULL));
 	uint32_t numNodes = 10;
 	for (uint32_t i=1; i < numNodes; i++ ) {
-        uint32_t node = (rand() % 100);
+        uint32_t node = (rand() % 10000);
 		tree1Root = tree1Root->insert(node);
-        cout << "Node " <<  node << " was inserted successfully!" << endl;
-        cout << "Number of nodes after insert: " << tree1Root->countNodes();
+        cout << "Node " << node << " was inserted successfully!" << endl;
+        cout << "number of nodes after insert: " << tree1Root->countNodes();
+        cout << "current tree height: " << tree1Root->getHeight() << endl;
 
 		//Uncomment to help debug lost nodes
 		if (tree1Root->countNodes() != i+1) {
@@ -48,7 +49,8 @@ int main() {
 	tree1Root->updateHeight();
 	float expectedHeight = log2(numNodes) * 1.5;
 	if (tree1Root->getHeight() < expectedHeight) {
-		std::cout<<"tree1Root height: PASSED. Real tree height: " << tree1Root->getHeight() <<std::endl;
+		std::cout<<"tree1Root height: PASSED.\nReal tree height: " << tree1Root->getHeight() << 
+        "-----Expected Tree Height: " << expectedHeight << std::endl;
 	}
 	else {
 		std::cout<<"tree1Root height: FAILED expected: <" <<expectedHeight<<" actual: "<<tree1Root->getHeight()<<std::endl;

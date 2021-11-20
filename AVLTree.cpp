@@ -50,7 +50,6 @@ int AVLTree::getBalance() {
         rightHeight = right->getHeight();
     }
 
-    cout << leftHeight - rightHeight << endl;
     return leftHeight - rightHeight;
 }
 
@@ -60,72 +59,102 @@ AVLTree* AVLTree::rotateRight() {
 
     // rotate
     x->right = this;
+    x->parent = this->parent;
+    parent = x;
     left = T2;
+    T2->parent = this;
 
     return x;
 }
 
 AVLTree* AVLTree::rotateLeft() {
     AVLTree* y = right;
-    AVLTree* T2 = y->right;
+    AVLTree* T2 = y->left;
 
     // rotate
     y->left = this;
+    y->parent = this->parent;
+    parent = y;
     right = T2;
+    T2->parent = this;
 
     return y;
 }
 
 AVLTree* AVLTree::rebalance() {
-    int bal = getBalance();
-    if (bal > 1 && data < left->data){
-        return rotateRight();
+    bool isBal = isBalanced();
+    if (isLeaf()){
+        return this;
     }
-    if (bal < -1 && data > right->data){
-        return rotateLeft();
+    if (parent != nullptr){
+        if (isBal){
+            parent->rebalance();
+        }
+        else {
+            int bal = getBalance();
+            if (bal > 1 && data > left->data){
+                return rotateRight();
+            }
+            if (bal < -1 && data < right->data){
+                return rotateLeft();
+            }
+            if (bal > 1 && data > left->data){
+                left = left->rotateLeft();
+                return rotateRight();
+            }
+            if (bal < -1 && data < right->data){
+                right = right->rotateRight();
+                return rotateLeft();
+            }
+
+        }    
     }
-    if (bal > 1 && data > left->data){
-        left = left->rotateLeft();
-        return rotateRight();
+    if (parent == nullptr && !isBal){
+        int bal = getBalance();
+        if (bal > 1 && data > left->data){
+            return rotateRight();
+        }
+        if (bal < -1 && data < right->data){
+            return rotateLeft();
+        }
+        if (bal > 1 && data > left->data){
+            left = left->rotateLeft();
+            return rotateRight();
+        }
+        if (bal < -1 && data < right->data){
+            right = right->rotateRight();
+            return rotateLeft();
+        }
+
+
     }
-    if (bal < -1 && data < right->data){
-        right = right->rotateRight();
-        return rotateLeft();
-    }
-    // return if no balancing is required
+    // return this; whiich should be the root
     return this;
 }
 
 AVLTree* AVLTree::insert(int new_data) {
-    AVLTree* r = this;
-    if(data > new_data){
+    AVLTree* root = this;
+
+    if (new_data < root->data){
         if (left == nullptr){
-            left = new AVLTree(new_data);
+            root->left = new AVLTree(new_data, root);
+            return root;
         }
-        else {
-            left->insert(new_data);
-        }
+        left->parent = root;
+        left->insert(new_data);
     }
-    else {
+    if (new_data >= root->data){
         if (right == nullptr){
-            right = new AVLTree(new_data);
+            root->right = new AVLTree(new_data, root);
+            return root;
         }
-        else {
-            right->insert(new_data);
-        }
-    }
-    
-    updateHeight();
-    cout << "New Height: " << getHeight() << endl;
-    //balance if not balanced
-    bool bal = isBalanced();
-    if (!bal){
-        rebalance();
-        cout << "\n---REBALANCE---" << endl;
+        right->parent = root;
+        right->insert(new_data);
     }
 
-    //cout << "You've made it to the end of insert function!" << endl;
-    return r;
+    root = root->rebalance();
+
+    return root;
 }
 
 
