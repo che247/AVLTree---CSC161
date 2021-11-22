@@ -42,6 +42,10 @@ class AVLTree {
 		//return new root of tree
 		AVLTree* rotateLeft();
 
+        //funciton to print AVL Tree in 2D
+        void print2D(AVLTree* root);
+        void print2DUtil(AVLTree* root, int space);
+
 		//Do not edit these three functions
 		bool isBalanced();
 		uint32_t countNodes();
