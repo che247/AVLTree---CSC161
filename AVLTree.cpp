@@ -26,16 +26,7 @@ bool AVLTree::isLeaf() {
 }
 
 uint32_t AVLTree::getHeight() {
-    uint32_t leftHeight = -1;
-    uint32_t rightHeight = -1;
-
-    if (left != nullptr){
-        leftHeight = left->getHeight();
-    }
-    if (right != nullptr){
-        rightHeight = right->getHeight();
-    }
-    return max(leftHeight, rightHeight) + 1;
+	return height;
 }
 
 //******************************************************
@@ -55,80 +46,75 @@ int AVLTree::getBalance() {
 
 AVLTree* AVLTree::rotateRight() {
     AVLTree* x = left;
-    AVLTree* T2 = x->right;
 
-    // rotate
+    if (x->right != nullptr){
+        left = x->right;
+        (x->right)->parent = this;
+    }
+    else {
+        AVLTree* T2 = x->right;
+        left = T2;
+    } 
+
     x->right = this;
-    x->parent = this->parent;
+    x->parent = parent;
+    x->updateHeight();
     parent = x;
-    left = T2;
-    T2->parent = this;
+
+    updateHeight();
 
     return x;
 }
 
 AVLTree* AVLTree::rotateLeft() {
     AVLTree* y = right;
-    AVLTree* T2 = y->left;
 
-    // rotate
+    if (y->left != nullptr){
+        right = y->left;
+        (y->left)->parent = this;
+    } else {
+        AVLTree* T2 = y->left;
+        right = T2;
+    }
+
     y->left = this;
-    y->parent = this->parent;
+    y->parent = parent;
+    y->updateHeight();
     parent = y;
-    right = T2;
-    T2->parent = this;
+
+    updateHeight();
 
     return y;
 }
 
 AVLTree* AVLTree::rebalance() {
     bool isBal = isBalanced();
+    int bal = getBalance();
+
     if (isLeaf()){
         return this;
     }
-    if (parent != nullptr){
-        if (isBal){
-            parent->rebalance();
-        }
-        else {
-            int bal = getBalance();
-            if (bal > 1 && data > left->data){
-                return rotateRight();
-            }
-            if (bal < -1 && data < right->data){
-                return rotateLeft();
-            }
-            if (bal > 1 && data > left->data){
-                left = left->rotateLeft();
-                return rotateRight();
-            }
-            if (bal < -1 && data < right->data){
-                right = right->rotateRight();
-                return rotateLeft();
-            }
 
-        }    
+    if(isBal){
+        return this;
     }
-    if (parent == nullptr && !isBal){
-        int bal = getBalance();
-        if (bal > 1 && data > left->data){
+    else {
+        if (bal > 1 && (left->left!=nullptr)){
             return rotateRight();
         }
-        if (bal < -1 && data < right->data){
+        if (bal < -1 && (right->right)!=nullptr){
             return rotateLeft();
         }
-        if (bal > 1 && data > left->data){
+        if (bal > 1 && (left->right)!=nullptr){
             left = left->rotateLeft();
             return rotateRight();
         }
-        if (bal < -1 && data < right->data){
+        if (bal < -1 && (right->left)!= nullptr){
             right = right->rotateRight();
             return rotateLeft();
         }
-
-
     }
-    // return this; whiich should be the root
+
     return this;
 }
 
@@ -138,21 +124,26 @@ AVLTree* AVLTree::insert(int new_data) {
     if (new_data < root->data){
         if (left == nullptr){
             root->left = new AVLTree(new_data, root);
-            return root;
+            (root->left)->updateHeight();
+        } else{
+            left->parent = root;
+            left = left->insert(new_data);
         }
-        left->parent = root;
-        left->insert(new_data);
-    }
-    if (new_data >= root->data){
-        if (right == nullptr){
-            root->right = new AVLTree(new_data, root);
-            return root;
-        }
-        right->parent = root;
-        right->insert(new_data);
     }
 
-    root = root->rebalance();
+    else if (new_data >= root->data){
+        if (right == nullptr){
+            root->right = new AVLTree(new_data, root);
+            (root->right)->updateHeight();
+        }else{
+            right->parent = root;
+            right = right->insert(new_data);
+        }
+    }
+
+    //cout << "Rebalancing Node: " << root->data << endl;
+    root = rebalance();
+    updateHeight();
 
     return root;
 }

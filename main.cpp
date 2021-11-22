@@ -17,15 +17,18 @@ int main() {
 	uint32_t numNodes = 10;
 	for (uint32_t i=1; i < numNodes; i++ ) {
         uint32_t node = (rand() % 10000);
+        //cout << "ATTEMPTING TO ADD Node " << node  << endl;
 		tree1Root = tree1Root->insert(node);
-        cout << "Node " << node << " was inserted successfully!" << endl;
-        cout << "number of nodes after insert: " << tree1Root->countNodes();
-        cout << "current tree height: " << tree1Root->getHeight() << endl;
+       // cout << "Node " << node << " was inserted successfully!" << endl;
+       // cout << "Current Tree Root = " << tree1Root->data << endl;
+       // cout << "Right of root = " << ((tree1Root->right)->data) << endl;
+       // cout << "number of nodes after insert: " << tree1Root->countNodes();
+       // cout << "current tree height: " << tree1Root->getHeight() << endl;
 
 		//Uncomment to help debug lost nodes
 		if (tree1Root->countNodes() != i+1) {
             cout << "\n\n\nNumber of nodes actual: " << tree1Root->countNodes() <<
-            "\nExpected number of nodes: " << i+2 << endl;
+            "\nExpected number of nodes: " << i+1 << endl;
 			std::cout<<"Lost node "<<std::endl;
 			return 1;
 		}
